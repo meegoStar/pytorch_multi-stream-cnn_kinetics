@@ -9,6 +9,7 @@ import time
 from tqdm import tqdm
 import pandas as pd
 import os
+import shutil
 
 import torch
 import torch.nn as nn
@@ -191,6 +192,7 @@ class MotionCnn():
             data_time_info = 'Data loading {data_time.val:.3f} ({data_time.avg:.3f})\t'.format(data_time=self.data_time)
         else:
             phase_str = 'Testing'
+            data_time_info = ''
 
         core_info = ('Epoch: [{0}], {1}[{2}/{3}]\t'
                      'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
