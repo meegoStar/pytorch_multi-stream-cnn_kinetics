@@ -10,6 +10,7 @@ from tqdm import tqdm
 import pandas as pd
 import os
 import shutil
+import argparse
 
 import torch
 import torch.nn as nn
@@ -19,6 +20,11 @@ from torch.autograd import Variable
 
 import torchvision.models as models
 import torchvision.transforms as transforms
+
+
+parser = argparse.ArgumentParser(description='PyTorch Motion CNN Training')
+parser.add_argument('--resume', default='', type=str, metavar='PATH',
+                    help='path to latest checkpoint (default: none)')
 
 
 def convert_conv1_weight(conv1_weight, original_channels_num=3, new_channels_num=10):
@@ -47,6 +53,8 @@ class MotionCnn():
                  img_row=224, img_col=224, scale=256,
                  train_root_dir='', val_root_dir='',
                  training_csv_name='', testing_csv_name=''):
+        self.best_prec1 = 0
+        self.start_epoch = 0
         self.epochs = epochs
         self.batch_size = batch_size
         self.learning_rate = learning_rate
@@ -140,13 +148,28 @@ class MotionCnn():
                                        shuffle=True,
                                        num_workers=8)
 
-    def prepare_training(self):
+    def resume(self, args):
+        if args.resume:
+            if os.path.isfile(args.resume):
+                print("=> loading checkpoint '{}'".format(args.resume))
+                checkpoint = torch.load(args.resume)
+                self.start_epoch = checkpoint['epoch']
+                self.best_prec1 = checkpoint['best_prec1']
+                self.model.load_state_dict(checkpoint['state_dict'])
+                self.optimizer.load_state_dict(checkpoint['optimizer'])
+                print("=> loaded checkpoint '{}' (epoch {})"
+                      .format(args.resume, self.start_epoch))
+            else:
+                print("=> no checkpoint found at '{}'".format(args.resume))
+
+    def prepare_training(self, args):
         self.build_model()
         self.set_loss_function()
         self.set_optimizer()
         self.set_scheduler()
         self.prepare_datasets()
         self.prepare_dataloaders()
+        self.resume(args)
 
     def display_epoch_info(self, train=True):
         print('****' * 40)
@@ -303,9 +326,9 @@ class MotionCnn():
         return self.top1.avg, self.losses.avg
 
     def train(self):
-        best_prec1 = 0
+        best_prec1 = self.best_prec1
         epochs = self.epochs
-        for self.epoch in range(1, epochs + 1):
+        for self.epoch in range(self.start_epoch + 1, epochs + 1):
             self.train_one_epoch() # train for one epoch
             prec1, val_loss = self.validate_one_epoch() # evaluate on validation set
 
@@ -347,6 +370,8 @@ if __name__ == '__main__':
     classes_num = 400
 
     # Initialize
+    args = parser.parse_args()
+
     motion_cnn = MotionCnn(epochs, batch_size, learning_rate, classes_num,
                            train_root_dir=train_root_dir,
                            val_root_dir=val_root_dir,
@@ -357,7 +382,7 @@ if __name__ == '__main__':
                           train_paths_dict_path,
                           val_labels_dict_path,
                           val_paths_dict_path)
-    motion_cnn.prepare_training()
+    motion_cnn.prepare_training(args)
     cudnn.benchmark = True
 
     # Training
