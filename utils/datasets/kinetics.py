@@ -29,6 +29,9 @@ class KineticsOpfData(Dataset):
 
         stack_opf_image = self.stack_opf(stack_name)
         sample = (torch.from_numpy(stack_opf_image).float(), stack_label)
+        #sample = (torch.from_numpy(np.zeros((10, self.img_row, self.img_col))).float(), 0)
+
+        #del stack_name, stack_label, stack_opf_image
         return sample
 
     def stack_opf(self, stack_name):
@@ -52,6 +55,8 @@ class KineticsOpfData(Dataset):
             stack_opf_images[2 * (i - 1) + 1, :, :] = flow_y
             flow_x_img.close()
             flow_y_img.close()
+            #del stack_paths_tuple, flow_x_name, flow_y_name, flow_x, flow_y, flow_x_img, flow_y_img
 
+        #del stack_paths_tuples
         return stack_opf_images
 
