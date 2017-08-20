@@ -61,7 +61,7 @@ class MotionCnn():
         self.classes_num = classes_num
         self.img_row = img_row
         self.img_col = img_col
-        self.scale = 256
+        self.scale = scale
         self.train_root_dir = train_root_dir
         self.val_root_dir = val_root_dir
 
