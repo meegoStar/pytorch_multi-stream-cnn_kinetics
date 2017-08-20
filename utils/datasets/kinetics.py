@@ -24,12 +24,14 @@ class KineticsOpfData(Dataset):
         return len(self.stack_names)
 
     def __getitem__(self, index):
+        """
         stack_name = self.stack_names[index]
         stack_label = self.action_labels_dict[self.stack_labels[index]]
 
         stack_opf_image = self.stack_opf(stack_name)
         sample = (torch.from_numpy(stack_opf_image).float(), stack_label)
-        #sample = (torch.from_numpy(np.zeros((10, self.img_row, self.img_col))).float(), 0)
+        """
+        sample = (torch.from_numpy(np.zeros((10, self.img_row, self.img_col))).float(), 0)
 
         #del stack_name, stack_label, stack_opf_image
         return sample
