@@ -77,16 +77,20 @@ class DataLoaderTester():
             self.train_one_epoch() # train for one epoch
 
     def test_dataloader_type(self):
-        data_iter = iter(self.train_loader)
-        test_batch = data_iter.next()
-        print 'test_batch type:', type(test_batch)
-        print 'test_batch length:', len(test_batch)
-        print '-' * 40
-        print 'test_batch[0] type:', type(test_batch[0])
-        print 'test_batch[0] length:', len(test_batch[0])
-        print '-' * 40
-        print 'test_batch[1] type:', type(test_batch[1])
-        print 'test_batch[1] length:', len(test_batch[1])
+        for i, test_batch in enumerate(self.train_loader, 0):
+            print 'batch:', i
+            print '*' * 40
+            print 'test_batch type:', type(test_batch)
+            print 'test_batch length:', len(test_batch)
+            print '-' * 40
+            print 'test_batch[0] type:', type(test_batch[0])
+            print 'test_batch[0] length:', len(test_batch[0])
+            print '-' * 40
+            print 'test_batch[1] type:', type(test_batch[1])
+            print 'test_batch[1] length:', len(test_batch[1])
+            print
+            if i > 50:
+                break
 
 
 if __name__ == '__main__':
