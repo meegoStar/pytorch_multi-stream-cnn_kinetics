@@ -76,6 +76,18 @@ class DataLoaderTester():
         for self.epoch in range(self.start_epoch + 1, epochs + 1):
             self.train_one_epoch() # train for one epoch
 
+    def test_dataloader_type(self):
+        data_iter = iter(self.train_loader)
+        test_batch = data_iter.next()
+        print 'test_batch type:', type(test_batch)
+        print 'test_batch length:', len(test_batch)
+        print '-' * 40
+        print 'test_batch[0] type:', type(test_batch[0])
+        print 'test_batch[0] length:', len(test_batch[0])
+        print '-' * 40
+        print 'test_batch[1] type:', type(test_batch[1])
+        print 'test_batch[1] length:', len(test_batch[1])
+
 
 if __name__ == '__main__':
     # Parameters
@@ -91,6 +103,7 @@ if __name__ == '__main__':
     batch_size = 64
 
     # Initialize
+    display_used_memory()
     tester = DataLoaderTester(epochs, batch_size, train_root_dir=train_root_dir)
     tester.load_dicts(action_labels_dict_path,
                       train_labels_dict_path,
@@ -98,5 +111,7 @@ if __name__ == '__main__':
     tester.prepare_training()
 
     # Pseudo training
-    tester.pseudo_train()
+    #tester.pseudo_train()
+
+    tester.test_dataloader_type()
 
