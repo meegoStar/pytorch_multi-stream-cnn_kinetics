@@ -3,8 +3,10 @@ from utils import lr_scheduler
 from utils.average_meter import AverageMeter
 from utils.accuracy import accuracy
 from utils.datasets import kinetics
-
 from networks import resnet_10_channels
+from settings.paths_and_names import paths_names_instance
+from settings import visible_gpus
+
 import time
 from tqdm import tqdm
 import pandas as pd
@@ -41,11 +43,11 @@ def convert_conv1_weight(conv1_weight, original_channels_num=3, new_channels_num
     return new_conv1_weight
 
 
-def save_checkpoint(state, is_best, filename='records/motion/checkpoint.pth.tar'):
+def save_checkpoint(state, is_best, filename=paths_names_instance.CHECKPOINT_NAME):
     torch.save(state, filename)
 
     if is_best:
-        shutil.copyfile(filename, 'records/motion/model_best.pth.tar')
+        shutil.copyfile(filename, paths_names_instance.BEST_MODEL_NAME)
 
 
 class MotionCnn():
@@ -347,21 +349,21 @@ class MotionCnn():
 
 if __name__ == '__main__':
     # Parameters
-    os.environ['CUDA_VISIBLE_DEVICES']='1'
+    os.environ['OMP_NUM_THREADS']='1' # for preventing dataloader stuck issue
 
-    train_root_dir = '/store_1/kinetics/optical_flow_sampled/train'
-    val_root_dir = '/store_1/kinetics/optical_flow_sampled/validation'
+    train_root_dir = paths_names_instance.TRAIN_ROOT_DIR
+    val_root_dir = paths_names_instance.VAL_ROOT_DIR
 
-    action_labels_dict_path = '/home/meego/pytorch_multi-stream-cnn_kinetics/dicts/motion/action_labels_dict.pickle'
+    action_labels_dict_path = paths_names_instance.ACTION_LABELS_DICT_PATH
 
-    train_labels_dict_path = '/home/meego/pytorch_multi-stream-cnn_kinetics/dicts/motion/train_labels_dict.pickle'
-    train_paths_dict_path = '/home/meego/pytorch_multi-stream-cnn_kinetics/dicts/motion/train_paths_dict.pickle'
+    train_labels_dict_path = paths_names_instance.TRAIN_LABELS_DICT_PATH
+    train_paths_dict_path = paths_names_instance.TRAIN_PATHS_DICT_PATH
 
-    val_labels_dict_path = '/home/meego/pytorch_multi-stream-cnn_kinetics/dicts/motion/validation_labels_dict.pickle'
-    val_paths_dict_path = '/home/meego/pytorch_multi-stream-cnn_kinetics/dicts/motion/validation_paths_dict.pickle'
+    val_labels_dict_path = paths_names_instance.VAL_LABELS_DICT_PATH
+    val_paths_dict_path = paths_names_instance.VAL_PATHS_DICT_PATH
 
-    training_csv_name = 'records/training.csv'
-    testing_csv_name = 'records/testing.csv'
+    training_csv_name = paths_names_instance.TRAINING_CSV_NAME
+    testing_csv_name = paths_names_instance.TESTING_CSV_NAME
 
     # Hyper parameters
     epochs = 50

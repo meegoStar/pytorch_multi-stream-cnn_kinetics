@@ -1,6 +1,8 @@
 from utils import pickle_tools
 from utils.datasets import kinetics
+from settings.paths_and_names import paths_names_instance
 
+import os
 from tqdm import tqdm
 import time
 import psutil
@@ -76,21 +78,40 @@ class DataLoaderTester():
         for self.epoch in range(self.start_epoch + 1, epochs + 1):
             self.train_one_epoch() # train for one epoch
 
+    def test_dataloader_type(self):
+        for i, test_batch in enumerate(self.train_loader, 0):
+            print 'batch:', i
+            print '*' * 40
+            print 'test_batch type:', type(test_batch)
+            print 'test_batch length:', len(test_batch)
+            print '-' * 40
+            print 'test_batch[0] type:', type(test_batch[0])
+            print 'test_batch[0] length:', len(test_batch[0])
+            print '-' * 40
+            print 'test_batch[1] type:', type(test_batch[1])
+            print 'test_batch[1] length:', len(test_batch[1])
+            print
+            if i > 50:
+                break
+
 
 if __name__ == '__main__':
     # Parameters
-    train_root_dir = '/store_1/kinetics/optical_flow_sampled/train'
+    os.environ['OMP_NUM_THREADS']='1' # for preventing dataloader stuck issue
 
-    action_labels_dict_path = '/home/meego/pytorch_multi-stream-cnn_kinetics/dicts/motion/action_labels_dict.pickle'
+    train_root_dir = paths_names_instance.TRAIN_ROOT_DIR
 
-    train_labels_dict_path = '/home/meego/pytorch_multi-stream-cnn_kinetics/dicts/motion/train_labels_dict.pickle'
-    train_paths_dict_path = '/home/meego/pytorch_multi-stream-cnn_kinetics/dicts/motion/train_paths_dict.pickle'
+    action_labels_dict_path = paths_names_instance.ACTION_LABELS_DICT_PATH
+
+    train_labels_dict_path = paths_names_instance.TRAIN_LABELS_DICT_PATH
+    train_paths_dict_path = paths_names_instance.TRAIN_PATHS_DICT_PATH
 
     # Hyper parameters
     epochs = 1
     batch_size = 64
 
     # Initialize
+    display_used_memory()
     tester = DataLoaderTester(epochs, batch_size, train_root_dir=train_root_dir)
     tester.load_dicts(action_labels_dict_path,
                       train_labels_dict_path,
@@ -99,4 +120,6 @@ if __name__ == '__main__':
 
     # Pseudo training
     tester.pseudo_train()
+
+    #tester.test_dataloader_type()
 
