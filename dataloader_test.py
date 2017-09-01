@@ -1,6 +1,8 @@
 from utils import pickle_tools
 from utils.datasets import kinetics
+from settings.paths_and_names import paths_names_instance
 
+import os
 from tqdm import tqdm
 import time
 import psutil
@@ -95,12 +97,14 @@ class DataLoaderTester():
 
 if __name__ == '__main__':
     # Parameters
-    train_root_dir = '/store_1/kinetics/optical_flow_sampled/train'
+    os.environ['OMP_NUM_THREADS']='1' # for preventing dataloader stuck issue
 
-    action_labels_dict_path = '/home/meego/pytorch_multi-stream-cnn_kinetics/dicts/motion/action_labels_dict.pickle'
+    train_root_dir = paths_names_instance.TRAIN_ROOT_DIR
 
-    train_labels_dict_path = '/home/meego/pytorch_multi-stream-cnn_kinetics/dicts/motion/train_labels_dict.pickle'
-    train_paths_dict_path = '/home/meego/pytorch_multi-stream-cnn_kinetics/dicts/motion/train_paths_dict.pickle'
+    action_labels_dict_path = paths_names_instance.ACTION_LABELS_DICT_PATH
+
+    train_labels_dict_path = paths_names_instance.TRAIN_LABELS_DICT_PATH
+    train_paths_dict_path = paths_names_instance.TRAIN_PATHS_DICT_PATH
 
     # Hyper parameters
     epochs = 1
@@ -115,7 +119,7 @@ if __name__ == '__main__':
     tester.prepare_training()
 
     # Pseudo training
-    #tester.pseudo_train()
+    tester.pseudo_train()
 
-    tester.test_dataloader_type()
+    #tester.test_dataloader_type()
 
