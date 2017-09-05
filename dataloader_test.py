@@ -7,6 +7,7 @@ from tqdm import tqdm
 import time
 import psutil
 import gc
+from memory_profiler import profile
 
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
@@ -63,6 +64,7 @@ class DataLoaderTester():
         self.prepare_datasets()
         self.prepare_dataloaders()
 
+    @profile
     def train_one_epoch(self):
         delay = 0
         display_step = 1000
@@ -73,6 +75,7 @@ class DataLoaderTester():
                 display_used_memory()
                 gc.collect()
 
+    @profile
     def pseudo_train(self):
         epochs = self.epochs
         for self.epoch in range(self.start_epoch + 1, epochs + 1):
